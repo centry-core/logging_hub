@@ -53,3 +53,23 @@ class Module(module.ModuleModel):
     def on_log_data(self, _, data):
         """ Process log data event """
         log.info("Log data: %s", data)
+        #
+        if "records" not in data:
+            return
+        #
+        for record in data["records"]:
+            sio_rooms = []
+            #
+            if "task_result_id" in record["labels"]:
+                sio_rooms.append(
+                    f'room:task_result_id:{record["labels"]["task_result_id"]}'
+                )
+            #
+            if sio_rooms:
+                log.info("--> Rooms: %s", sio_rooms)
+                #
+                self.context.sio.emit(
+                    event="log_data",
+                    data=record,
+                    room=sio_rooms,
+                )
