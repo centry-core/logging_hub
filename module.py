@@ -57,19 +57,20 @@ class Module(module.ModuleModel):
         if "records" not in data:
             return
         #
+        sio_rooms = {}
+        #
         for record in data["records"]:
-            sio_rooms = []
-            #
             if "task_result_id" in record["labels"]:
-                sio_rooms.append(
-                    f'room:task_result_id:{record["labels"]["task_result_id"]}'
-                )
+                room = f'room:task_result_id:{record["labels"]["task_result_id"]}'
+                if room not in sio_rooms:
+                    sio_rooms[room] = []
+                sio_rooms[room].append(record)
+        #
+        for room, records in sio_rooms.items():
+            log.info("--> Room: %s = %s", room, len(records))
             #
-            if sio_rooms:
-                log.info("--> Rooms: %s", sio_rooms)
-                #
-                self.context.sio.emit(
-                    event="log_data",
-                    data=record,
-                    room=sio_rooms,
-                )
+            self.context.sio.emit(
+                event="log_data",
+                data=records,
+                room=room,
+            )
