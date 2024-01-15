@@ -63,8 +63,11 @@ class Module(module.ModuleModel):
         for record in data["records"]:
             if "task_result_id" in record["labels"]:
                 room = f'room:task_result_id:{record["labels"]["task_result_id"]}'
+                #
                 if room not in sio_rooms:
                     sio_rooms[room] = []
+                #
+                if room not in self.room_cache:
                     self.room_cache[room] = []
                 #
                 sio_rooms[room].append(record)
