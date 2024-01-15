@@ -46,7 +46,15 @@ class SIO:  # pylint: disable=E1101,R0903
         log.info("task_logs_subscribe: [%s] %s", sid, data)
         #
         if "task_result_id" in data:
-            self.context.sio.enter_room(sid, f'room:task_result_id:{data["task_result_id"]}')
+            room = f'room:task_result_id:{data["task_result_id"]}'
+            self.context.sio.enter_room(sid, room)
+            #
+            if room in self.room_cache:
+                self.context.sio.emit(
+                    event="log_data",
+                    data=self.room_cache[room],
+                    room=sid,
+                )
 
     @web.sio("task_logs_unsubscribe")
     @auth.decorators.sio_check([])
@@ -55,4 +63,5 @@ class SIO:  # pylint: disable=E1101,R0903
         log.info("task_logs_unsubscribe: [%s] %s", sid, data)
         #
         if "task_result_id" in data:
-            self.context.sio.leave_room(sid, f'room:task_result_id:{data["task_result_id"]}')
+            room = f'room:task_result_id:{data["task_result_id"]}'
+            self.context.sio.leave_room(sid, room)

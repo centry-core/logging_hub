@@ -31,6 +31,7 @@ class Module(module.ModuleModel):
         self.descriptor = descriptor
         #
         self.event_node = RedisEventNode(**self.descriptor.config.get("event_node"))
+        self.room_cache = {}
 
     def init(self):
         """ Init module """
@@ -64,7 +65,13 @@ class Module(module.ModuleModel):
                 room = f'room:task_result_id:{record["labels"]["task_result_id"]}'
                 if room not in sio_rooms:
                     sio_rooms[room] = []
+                    self.room_cache[room] = []
+                #
                 sio_rooms[room].append(record)
+                self.room_cache[room].append(record)
+                #
+                while len(self.room_cache[room]) > 100:
+                    self.room_cache[room].pop(0)
         #
         for room, records in sio_rooms.items():
             log.info("--> Room: %s = %s", room, len(records))
