@@ -17,7 +17,7 @@
 
 """ SIO """
 
-from pylon.core.tools import log  # pylint: disable=E0611,E0401
+# from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import web  # pylint: disable=E0611,E0401
 
 from tools import auth  # pylint: disable=E0401
@@ -45,7 +45,7 @@ class SIO:  # pylint: disable=E1101,R0903
     @auth.decorators.sio_check([])
     def task_logs_subscribe(self, sid, data):
         """ Event handler """
-        log.info("task_logs_subscribe: [%s] %s", sid, data)
+        # log.info("task_logs_subscribe: [%s] %s", sid, data)
         rooms = make_room_names(data)
         #
         for room in rooms:
@@ -62,7 +62,7 @@ class SIO:  # pylint: disable=E1101,R0903
     @auth.decorators.sio_check([])
     def task_logs_unsubscribe(self, sid, data):
         """ Event handler """
-        log.info("task_logs_unsubscribe: [%s] %s", sid, data)
+        # log.info("task_logs_unsubscribe: [%s] %s", sid, data)
         rooms = make_room_names(data)
         #
         for room in rooms:
