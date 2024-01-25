@@ -22,6 +22,8 @@ from pylon.core.tools import web  # pylint: disable=E0611,E0401
 
 from tools import auth  # pylint: disable=E0401
 
+from ..tools.rooms import make_room_names
+
 
 class SIO:  # pylint: disable=E1101,R0903
     """
@@ -44,9 +46,9 @@ class SIO:  # pylint: disable=E1101,R0903
     def task_logs_subscribe(self, sid, data):
         """ Event handler """
         log.info("task_logs_subscribe: [%s] %s", sid, data)
+        rooms = make_room_names(data)
         #
-        if "task_result_id" in data:
-            room = f'room:task_result_id:{data["task_result_id"]}'
+        for room in rooms:
             self.context.sio.enter_room(sid, room)
             #
             if room in self.room_cache:
@@ -61,7 +63,7 @@ class SIO:  # pylint: disable=E1101,R0903
     def task_logs_unsubscribe(self, sid, data):
         """ Event handler """
         log.info("task_logs_unsubscribe: [%s] %s", sid, data)
+        rooms = make_room_names(data)
         #
-        if "task_result_id" in data:
-            room = f'room:task_result_id:{data["task_result_id"]}'
+        for room in rooms:
             self.context.sio.leave_room(sid, room)

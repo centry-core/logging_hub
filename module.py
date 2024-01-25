@@ -22,6 +22,8 @@ from pylon.core.tools import module  # pylint: disable=E0611,E0401
 
 from arbiter import RedisEventNode  # pylint: disable=E0611,E0401
 
+from .tools.rooms import make_room_names
+
 
 class Module(module.ModuleModel):
     """ Pylon module """
@@ -54,6 +56,7 @@ class Module(module.ModuleModel):
     def on_log_data(self, _, data):
         """ Process log data event """
         log.info("Log data: %s", data)
+        room_cache_size = self.descriptor.config.get("room_cache_size", 100)
         #
         if "records" not in data:
             return
@@ -61,9 +64,9 @@ class Module(module.ModuleModel):
         sio_rooms = {}
         #
         for record in data["records"]:
-            if "task_result_id" in record["labels"]:
-                room = f'room:task_result_id:{record["labels"]["task_result_id"]}'
-                #
+            rooms = make_room_names(record["labels"])
+            #
+            for room in rooms:
                 if room not in sio_rooms:
                     sio_rooms[room] = []
                 #
@@ -73,8 +76,9 @@ class Module(module.ModuleModel):
                 sio_rooms[room].append(record)
                 self.room_cache[room].append(record)
                 #
-                while len(self.room_cache[room]) > 100:
+                while len(self.room_cache[room]) > room_cache_size:
                     self.room_cache[room].pop(0)
+            #
         #
         for room, records in sio_rooms.items():
             log.info("--> Room: %s = %s", room, len(records))
