@@ -31,7 +31,9 @@ class Module(module.ModuleModel):
         self.descriptor = descriptor
         #
         self.event_node = RedisEventNode(**self.descriptor.config.get("event_node"))
+        #
         self.room_cache = {}
+        self.room_timestamp = {}
 
     def init(self):
         """ Init module """
@@ -49,4 +51,4 @@ class Module(module.ModuleModel):
         self.event_node.unsubscribe("log_data", self.on_log_data)
         self.event_node.stop()
         # De-init
-        # self.descriptor.deinit_all()
+        self.descriptor.deinit_all()

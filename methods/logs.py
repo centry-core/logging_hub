@@ -17,6 +17,8 @@
 
 """ Method """
 
+import time
+
 # from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import web  # pylint: disable=E0611,E0401
 
@@ -48,6 +50,8 @@ class Method:  # pylint: disable=E1101,R0903,W0201
             rooms = make_room_names(record["labels"])
             #
             for room in rooms:
+                self.room_timestamp[room] = time.time()
+                #
                 if room not in sio_rooms:
                     sio_rooms[room] = []
                 #

@@ -22,6 +22,10 @@ def make_room_names(labels):
     """ Make names of matching rooms """
     rooms = []
     #
+    if "tasknode_task" in labels:
+        room = f'room:tasknode_task:{labels["tasknode_task"]}'
+        rooms.append(room)
+    #
     if "task_result_id" in labels:
         room = f'room:task_result_id:{labels["task_result_id"]}'
         rooms.append(room)
