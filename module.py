@@ -20,7 +20,7 @@
 from pylon.core.tools import log  # pylint: disable=E0611,E0401
 from pylon.core.tools import module  # pylint: disable=E0611,E0401
 
-from arbiter import RedisEventNode  # pylint: disable=E0611,E0401
+import arbiter  # pylint: disable=E0611,E0401
 
 
 class Module(module.ModuleModel):
@@ -30,7 +30,8 @@ class Module(module.ModuleModel):
         self.context = context
         self.descriptor = descriptor
         #
-        self.event_node = RedisEventNode(**self.descriptor.config.get("event_node"))
+        self.event_node_config = None
+        self.event_node = None
         #
         self.room_cache = {}
         self.room_timestamp = {}
@@ -41,6 +42,10 @@ class Module(module.ModuleModel):
         # Init
         self.descriptor.init_all()
         # EventNode
+        self.event_node_config = self.get_event_node_config()
+        self.event_node = arbiter.make_event_node(
+            config=self.event_node_config,
+        )
         self.event_node.start()
         self.event_node.subscribe("log_data", self.on_log_data)
 
