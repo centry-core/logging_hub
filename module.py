@@ -22,6 +22,8 @@ from pylon.core.tools import module  # pylint: disable=E0611,E0401
 
 import arbiter  # pylint: disable=E0611,E0401
 
+from .tools.housekeeper import RoomHousekeeper
+
 
 class Module(module.ModuleModel):
     """ Pylon module """
@@ -48,6 +50,8 @@ class Module(module.ModuleModel):
         )
         self.event_node.start()
         self.event_node.subscribe("log_data", self.on_log_data)
+        # RoomHousekeeper
+        RoomHousekeeper(self).start()
 
     def deinit(self):
         """ De-init module """
